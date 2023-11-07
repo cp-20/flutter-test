@@ -1,47 +1,82 @@
-import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart' as provider;
 
-const supabaseUrl = 'https://qpzeybucecxdukidxczn.supabase.co';
-const supabaseAnonKey =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwemV5YnVjZWN4ZHVraWR4Y3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODg0NjI0MzcsImV4cCI6MjAwNDAzODQzN30.xwJ_1UU18kKH6wqHdqpIoTlsnTGkC_y7liiLMIfTZ8s';
-
-final supabase = supabase_flutter.Supabase.instance.client;
-
-final userProvider = StateProvider((ref) => supabase.auth.currentUser);
-final sessionProvider = StateProvider((ref) => supabase.auth.currentSession);
+final supabase = Supabase.instance.client;
 
 Future<void> initAuth() async {
-  await supabase_flutter.Supabase.initialize(
+  final supabaseUrl = dotenv.env['SUPABASE_URL'];
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
+
+  if (supabaseUrl == null || supabaseAnonKey == null) {
+    throw Exception('Missing SUPABASE_URL or SUPABASE_ANON_KEY');
+  }
+
+  await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
-      authFlowType: supabase_flutter.AuthFlowType.pkce);
+      authFlowType: AuthFlowType.pkce);
+}
 
-  StateProvider((ref) {
+class SupabaseAuthState extends ChangeNotifier {
+  SupabaseAuthState(this.state);
+
+  GoTrueClient state;
+
+  void setState(GoTrueClient newAuthState) {
+    state = newAuthState;
+    notifyListeners();
+  }
+}
+
+class AuthProvider extends StatefulWidget {
+  const AuthProvider({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  createState() => _AuthProviderState();
+}
+
+class _AuthProviderState extends State<AuthProvider> {
+  SupabaseAuthState state = SupabaseAuthState(supabase.auth);
+
+  @override
+  void initState() {
+    super.initState();
+
     supabase.auth.onAuthStateChange.listen((event) {
-      ref.read(userProvider.notifier).state = supabase.auth.currentUser;
-      ref.read(sessionProvider.notifier).state = supabase.auth.currentSession;
+      state.setState(supabase.auth);
     });
-  });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return provider.ChangeNotifierProvider<SupabaseAuthState>.value(
+      value: state,
+      child: widget.child,
+    );
+  }
 }
 
 Future<void> signIn() async {
   try {
-    await supabase.auth.signInWithOAuth(supabase_flutter.Provider.github,
+    await supabase.auth.signInWithOAuth(Provider.github,
         redirectTo: 'read-stack://login-callback');
-  } on supabase_flutter.AuthException catch (error) {
+  } on AuthException {
     // ...
-  } on Exception catch (error) {
+  } on Exception {
     // ..
   }
 }
 
-Future<void> logout() async {
+Future<void> signOut() async {
   try {
     await supabase.auth.signOut();
-  } on supabase_flutter.AuthException catch (error) {
+  } on AuthException {
     // ...
-  } on Exception catch (error) {
+  } on Exception {
     // ...
   }
 }
