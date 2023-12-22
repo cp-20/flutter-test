@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:test_flutter_project/components/sliver_animated_list_view.dart';
+import 'package:test_flutter_project/components/infinity_list_view.dart';
 import 'package:test_flutter_project/gateways/get_my_clips.dart';
 import 'package:test_flutter_project/gateways/patch_clip.dart';
 import 'package:test_flutter_project/models/clip.dart' as models;
@@ -26,7 +28,7 @@ class ClipList extends StatefulHookWidget {
 class _ClipListState extends State<ClipList> {
   late Future<void> future;
   List<models.Clip> clipContents = [];
-  final int loadLimit = 10;
+  final int loadLimit = 20;
 
   Future<bool> fetchContents([int? cursor]) async {
     final clips =
@@ -49,21 +51,6 @@ class _ClipListState extends State<ClipList> {
     if (clip == null) return false;
 
     return true;
-  }
-
-  DismissDirectionCallback? dismissHandlerGenerator(int clipId) {
-    if (!widget.unreadOnly) return null;
-
-    final targetIndex =
-        clipContents.indexWhere((element) => element.id == clipId);
-    if (targetIndex == -1) return null;
-
-    return (_) {
-      updateClipStatus(clipContents[targetIndex].id, 2);
-      setState(() {
-        clipContents.removeAt(targetIndex);
-      });
-    };
   }
 
   @override
@@ -90,11 +77,116 @@ class _ClipListState extends State<ClipList> {
           print(snapshot.error);
           return const Text("エラーが発生しました");
         } else {
-          return InfinityListView(
+          return InfinityListView<models.Clip>(
             contents: clipContents,
-            fetchContents: fetchContents,
-            type: widget.type,
-            dismissHandlerGenerator: dismissHandlerGenerator,
+            fetchContents: () => fetchContents(clipContents.last.id),
+            itemListBuilder: (context, scrollController, clips, hasMore) {
+              return CustomScrollView(
+                controller: scrollController,
+                slivers: [
+                  SliverAnimatedListView(
+                    items: clips,
+                    itemBuilder:
+                        (context, clip, animation, isRemoved, insert, remove) {
+                      if (widget.type == ClipListType.card) {
+                        return Column(
+                          children: [
+                            Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                child: ClipCard(clip: clip)),
+                            const SizedBox(height: 8),
+                          ],
+                        );
+                      }
+
+                      return Column(
+                        children: [
+                          SizeTransition(
+                            sizeFactor: animation,
+                            child: DismissibleView(
+                              itemKey: Key('clip-${clip.id}'),
+                              onDismissed: (direction) {
+                                  final targetIndex = clipContents.indexWhere(
+                                      (element) => element.id == clip.id);
+
+                                  final targetClip = clipContents[targetIndex];
+                                  updateClipStatus(
+                                      clipContents[targetIndex].id, 2);
+                                  remove(targetIndex);
+                                  setState(() {
+                                    clipContents.removeAt(targetIndex);
+                                  });
+
+                                  final snackBar = SnackBar(
+                                    action: SnackBarAction(
+                                      label: '元に戻す',
+                                      onPressed: () {},
+                                    ),
+                                    content: const Text('記事を既読にしました'),
+                                    duration:
+                                        const Duration(milliseconds: 1000),
+                                    // margin: const EdgeInsets.all(16),
+                                    // behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    animation: CurvedAnimation(
+                                      curve: Curves.easeIn,
+                                      reverseCurve: Curves.easeOut,
+                                      parent: animation.drive(Tween<double>(
+                                        begin: 0.0,
+                                        end: 1.0,
+                                      )),
+                                    ),
+                                  );
+
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar)
+                                      .closed
+                                      .then((reason) {
+                                    if (reason != SnackBarClosedReason.action) {
+                                      return;
+                                    }
+
+                                    insert(targetIndex, targetClip);
+                                    updateClipStatus(
+                                        clipContents[targetIndex].id,
+                                        targetClip.status);
+                                    setState(() {
+                                      clipContents.insert(
+                                          targetIndex, targetClip);
+                                    });
+                                  });
+                              },
+                              child: ClipListTile(
+                                clip: clip,
+                              ),
+                            ),
+                          ),
+                          Divider(
+                              height: 1,
+                              thickness: 1,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.1)),
+                        ],
+                      );
+                    },
+                  ),
+                  if (hasMore)
+                    const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    )
+                ],
+              );
+            },
           );
         }
       },
@@ -102,111 +194,48 @@ class _ClipListState extends State<ClipList> {
   }
 }
 
-class InfinityListView extends StatefulWidget {
-  final List<models.Clip> contents;
-  final Future<bool> Function(int?) fetchContents;
-  final ClipListType type;
-  final DismissDirectionCallback? Function(int) dismissHandlerGenerator;
+class DismissibleView extends StatelessWidget {
+  const DismissibleView({
+    super.key,
+    required this.itemKey,
+    required this.child,
+    required this.onDismissed,
+  });
 
-  const InfinityListView(
-      {super.key,
-      required this.contents,
-      required this.fetchContents,
-      required this.type,
-      required this.dismissHandlerGenerator});
-
-  @override
-  State<InfinityListView> createState() => _InfinityListViewState();
-}
-
-class _InfinityListViewState extends State<InfinityListView> {
-  late ScrollController _scrollController;
-  bool _isLoading = false;
-  bool _hasMore = true;
-
-  @override
-  void initState() {
-    _scrollController = ScrollController();
-    _scrollController.addListener(() async {
-      if (_scrollController.position.pixels >=
-              _scrollController.position.maxScrollExtent * 0.95 &&
-          !_isLoading) {
-        _isLoading = true;
-
-        final hasMore = await widget.fetchContents(widget.contents.last.id);
-
-        setState(() {
-          _isLoading = false;
-          _hasMore = hasMore;
-        });
-
-        if (!hasMore) {
-          _scrollController.dispose();
-        }
-      }
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
+  final Key itemKey;
+  final Widget child;
+  final DismissDirectionCallback? onDismissed;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      controller: _scrollController,
-      itemCount: _hasMore ? widget.contents.length + 1 : widget.contents.length,
-      separatorBuilder: (BuildContext context, int index) {
-        if (widget.type == ClipListType.card) {
-          return const SizedBox(height: 8);
-        }
-        return Divider(
-            height: 1,
-            thickness: 1,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1));
-      },
-      itemBuilder: (BuildContext context, int index) {
-        if (_hasMore && widget.contents.length == index) {
-          return const SizedBox(
-            height: 50,
-            width: 50,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        final clip = widget.contents[index];
-        if (widget.type == ClipListType.card) {
-          return Container(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: ClipCard(clip: clip));
-        }
-
-        return Dismissible(
-          key: Key('clip-${clip.id}'),
-          background: Container(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Icon(
-                Icons.markunread,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                size: 32,
-              ),
-            ),
+    return Dismissible(
+      key: itemKey,
+      background: Container(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: Icon(
+            Icons.markunread,
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            size: 32,
           ),
-          onDismissed: widget.dismissHandlerGenerator(clip.id),
-          child: ClipListTile(
-            clip: clip,
-            dismissHandler: widget.dismissHandlerGenerator(clip.id),
-          ),
-        );
-      },
+        ),
+      ),
+      // secondaryBackground: Container(
+      //   color: Theme.of(context).colorScheme.errorContainer,
+      //   alignment: Alignment.centerRight,
+      //   child: Padding(
+      //     padding: const EdgeInsets.only(right: 16),
+      //     child: Icon(
+      //       Icons.archive,
+      //       color: Theme.of(context).colorScheme.onErrorContainer,
+      //       size: 32,
+      //     ),
+      //   ),
+      // ),
+      onDismissed: onDismissed,
+      child: child,
     );
   }
 }

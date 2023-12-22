@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:test_flutter_project/supabase/auth.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -6,7 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'home.dart';
 import 'settings.dart';
 
-class MainApp extends StatefulWidget {
+class MainApp extends StatefulHookWidget {
   const MainApp({super.key});
 
   @override
@@ -21,10 +22,12 @@ class _MainAppState extends State<MainApp> {
     final User? user =
         provider.Provider.of<SupabaseAuthState>(context).state.currentUser;
 
-    if (user == null) {
-      Future.microtask(
-          () => Navigator.of(context).pushReplacementNamed('/login'));
-    }
+    useEffect(() {
+      if (user == null) {
+        Future.microtask(
+            () => Navigator.of(context).pushReplacementNamed('/login'));
+      }
+    }, [user]);
 
     return Scaffold(
         body: [const HomePage(), const SettingsPage()][currentPageIndex],

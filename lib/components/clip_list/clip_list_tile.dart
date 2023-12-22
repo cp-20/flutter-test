@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nil/nil.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:test_flutter_project/models/clip.dart' as models;
 import 'package:test_flutter_project/screens/webview.dart';
 
 class ClipListTile extends StatelessWidget {
-  const ClipListTile({super.key, required this.clip, this.dismissHandler});
+  const ClipListTile({super.key, required this.clip});
 
   final models.Clip clip;
-  final DismissDirectionCallback? dismissHandler;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +91,8 @@ class ClipListTile extends StatelessWidget {
                   IconButton(
                       padding: const EdgeInsets.all(8),
                       onPressed: () {
-                        print('share button pressed');
+                        if (clip.article == null) return;
+                        Share.share(clip.article!.url, subject: clip.article!.title);
                       },
                       icon: const Icon(Icons.share)),
                   IconButton(
