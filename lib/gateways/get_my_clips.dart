@@ -21,17 +21,16 @@ class Clips {
 Future<Clips?> getMyClips(BuildContext context, int loadLimit, int? cursor,
     [bool? unreadOnly]) async {
   final cookie = getCookie(context);
-  final userId = getUserId(context);
 
-  if (cookie == null || userId == null) {
+  if (cookie == null) {
     return null;
   }
 
   final url = (() {
-    var baseUrl = "$apiEndpoint/users/$userId/clips?limit=$loadLimit";
+    var baseUrl = "$apiEndpoint/users/me/clips?limit=$loadLimit";
     if (cursor != null) baseUrl += "&cursor=$cursor";
     if (unreadOnly != null) {
-      baseUrl += "&query=${json.encode({'unreadOnly': unreadOnly})}";
+      baseUrl += "&unreadOnly=$unreadOnly";
     }
     return baseUrl;
   })();

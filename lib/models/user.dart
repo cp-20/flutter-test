@@ -4,7 +4,7 @@ class User {
     required this.email,
     required this.name,
     this.displayName,
-    this.avatarUrl,
+    this.avatar,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -13,7 +13,7 @@ class User {
   String email;
   String name;
   String? displayName;
-  String? avatarUrl;
+  String? avatar;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -22,7 +22,7 @@ class User {
         email = json['email'] as String,
         name = json['name'] as String,
         displayName = json['displayName'] as String?,
-        avatarUrl = json['avatarUrl'] as String?,
+        avatar = json['avatar'] as String?,
         createdAt = DateTime.parse(json['createdAt'] as String),
         updatedAt = DateTime.parse(json['updatedAt'] as String);
 }

@@ -7,7 +7,7 @@ class Clip {
   String? comment;
   Article? article;
   int articleId;
-  String authorId;
+  String userId;
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -18,7 +18,7 @@ class Clip {
     required this.comment,
     required this.article,
     required this.articleId,
-    required this.authorId,
+    required this.userId,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -32,7 +32,7 @@ class Clip {
             ? Article.fromJson(json['article'] as Map<String, dynamic>)
             : null,
         articleId = json['articleId'] as int,
-        authorId = json['authorId'] as String,
+        userId = json['userId'] as String,
         createdAt = DateTime.parse(json['createdAt'] as String),
         updatedAt = DateTime.parse(json['updatedAt'] as String);
 

@@ -26,12 +26,11 @@ class ClipPatch {
 Future<Clip?> updateClip(
     BuildContext context, int clipId, ClipPatch patch) async {
   final cookie = getCookie(context);
-  final userId = getUserId(context);
-  if (cookie == null || userId == null) {
+  if (cookie == null) {
     return null;
   }
 
-  final url = Uri.parse("$apiEndpoint/users/$userId/clips/$clipId");
+  final url = Uri.parse("$apiEndpoint/users/me/clips/$clipId");
 
   final response = await http.patch(
     url,

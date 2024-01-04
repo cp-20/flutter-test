@@ -14,14 +14,8 @@ String? getCookie(BuildContext context) {
     return null;
   }
 
-  final tokenArray = [
-    session.accessToken,
-    session.refreshToken,
-    session.providerToken,
-    session.providerRefreshToken,
-    null
-  ];
-  final tokenCookieValue = Uri.encodeComponent(json.encode(tokenArray));
+  final tokenCookieValue =
+      Uri.encodeComponent(json.encode(session));
 
   final cookie = '$authCookieName=$tokenCookieValue';
 

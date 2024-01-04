@@ -23,12 +23,11 @@ class ArticleAndClip {
 Future<ArticleAndClip?> postArticle(
     BuildContext context, String articleUrl) async {
   final cookie = getCookie(context);
-  final userId = getUserId(context);
-  if (cookie == null || userId == null) {
+  if (cookie == null) {
     return null;
   }
 
-  final url = Uri.parse("$apiEndpoint/users/$userId/clips");
+  final url = Uri.parse("$apiEndpoint/users/me/clips");
 
   final response = await http.post(
     url,
