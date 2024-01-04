@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:test_flutter_project/supabase/auth.dart';
-import 'package:provider/provider.dart' as provider;
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'home.dart';
@@ -20,7 +20,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     final User? user =
-        provider.Provider.of<SupabaseAuthState>(context).state.currentUser;
+        Provider.of<SupabaseAuthState>(context).state.currentUser;
 
     useEffect(() {
       if (user == null) {

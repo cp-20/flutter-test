@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:provider/provider.dart' as provider;
+import 'package:provider/provider.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -14,9 +14,12 @@ Future<void> initAuth() async {
   }
 
   await Supabase.initialize(
-      url: supabaseUrl,
-      anonKey: supabaseAnonKey,
-      authFlowType: AuthFlowType.pkce);
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
+  );
 }
 
 class SupabaseAuthState extends ChangeNotifier {
@@ -53,7 +56,7 @@ class _AuthProviderState extends State<AuthProvider> {
 
   @override
   Widget build(BuildContext context) {
-    return provider.ChangeNotifierProvider<SupabaseAuthState>.value(
+    return ChangeNotifierProvider<SupabaseAuthState>.value(
       value: state,
       child: widget.child,
     );
@@ -62,7 +65,7 @@ class _AuthProviderState extends State<AuthProvider> {
 
 Future<void> signIn() async {
   try {
-    await supabase.auth.signInWithOAuth(Provider.github,
+    await supabase.auth.signInWithOAuth(OAuthProvider.github,
         redirectTo: 'read-stack://login-callback');
   } on AuthException {
     // ...
