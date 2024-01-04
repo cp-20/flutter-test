@@ -9,8 +9,8 @@ String? getCookie(BuildContext context) {
   final auth = Provider.of<SupabaseAuthState>(context, listen: false);
   final user = auth.state.currentUser;
   final session = auth.state.currentSession;
-  final appId = dotenv.env['SUPABASE_APP_ID'];
-  if (user == null || session == null || appId == null) {
+  final authCookieName = dotenv.env['AUTH_COOKIE_NAME'];
+  if (user == null || session == null || authCookieName == null) {
     return null;
   }
 
@@ -23,7 +23,7 @@ String? getCookie(BuildContext context) {
   ];
   final tokenCookieValue = Uri.encodeComponent(json.encode(tokenArray));
 
-  final cookie = 'sb-$appId-auth-token=$tokenCookieValue';
+  final cookie = '$authCookieName=$tokenCookieValue';
 
   return cookie;
 }
