@@ -20,9 +20,9 @@ class Clips {
 
 Future<Clips?> getMyClips(BuildContext context, int loadLimit, int? cursor,
     [bool? unreadOnly]) async {
-  final cookie = getCookie(context);
+  final header = getAuthHeader(context);
 
-  if (cookie == null) {
+  if (header == null) {
     return null;
   }
 
@@ -38,10 +38,7 @@ Future<Clips?> getMyClips(BuildContext context, int loadLimit, int? cursor,
 
   final response = await http.get(
     uri,
-    headers: {
-      'Content-Type': 'application/json',
-      'Cookie': cookie,
-    },
+    headers: {'Content-Type': 'application/json', ...header},
   );
 
   if (response.statusCode != 200) {

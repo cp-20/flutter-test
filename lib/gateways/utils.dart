@@ -5,6 +5,16 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:test_flutter_project/supabase/auth.dart';
 
+getAuthHeader(BuildContext context) {
+  final cookie = getCookie(context);
+
+  if (cookie != null) {
+    return {'Cookie': cookie};
+  }
+
+  return null;
+}
+
 String? getCookie(BuildContext context) {
   final auth = Provider.of<SupabaseAuthState>(context, listen: false);
   final user = auth.state.currentUser;
@@ -14,8 +24,7 @@ String? getCookie(BuildContext context) {
     return null;
   }
 
-  final tokenCookieValue =
-      Uri.encodeComponent(json.encode(session));
+  final tokenCookieValue = Uri.encodeComponent(json.encode(session));
 
   final cookie = '$authCookieName=$tokenCookieValue';
 

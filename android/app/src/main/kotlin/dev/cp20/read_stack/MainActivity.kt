@@ -1,4 +1,4 @@
-package com.example.test_flutter_project
+package dev.cp20.read_stack
 
 import io.flutter.embedding.android.FlutterActivity
 

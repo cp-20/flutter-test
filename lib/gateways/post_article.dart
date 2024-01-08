@@ -6,10 +6,9 @@ import 'package:test_flutter_project/gateways/const.dart';
 import 'package:test_flutter_project/gateways/utils.dart';
 import 'package:test_flutter_project/models/clip.dart';
 
-Future<Clip?> postArticle(
-    BuildContext context, String articleUrl) async {
-  final cookie = getCookie(context);
-  if (cookie == null) {
+Future<Clip?> postArticle(BuildContext context, String articleUrl) async {
+  final header = getAuthHeader(context);
+  if (header == null) {
     return null;
   }
 
@@ -18,10 +17,7 @@ Future<Clip?> postArticle(
   final response = await http.post(
     url,
     body: json.encode({'type': 'url', 'articleUrl': articleUrl}),
-    headers: {
-      'Content-Type': 'application/json',
-      'Cookie': cookie,
-    },
+    headers: {'Content-Type': 'application/json', ...header},
   );
 
   if (response.statusCode != 200 && response.statusCode != 201) {

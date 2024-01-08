@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="test_flutter_project">
+    package="dev.cp20.read_stack">
 
 
     <!-- Required to fetch data from the internet. -->

@@ -25,8 +25,8 @@ class ClipPatch {
 
 Future<Clip?> updateClip(
     BuildContext context, int clipId, ClipPatch patch) async {
-  final cookie = getCookie(context);
-  if (cookie == null) {
+  final header = getAuthHeader(context);
+  if (header == null) {
     return null;
   }
 
@@ -37,7 +37,7 @@ Future<Clip?> updateClip(
     body: json.encode({'clip': patch.toJson()}),
     headers: {
       'Content-Type': 'application/json',
-      'Cookie': cookie,
+      ...header,
     },
   );
 

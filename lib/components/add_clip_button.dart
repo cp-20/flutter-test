@@ -8,6 +8,7 @@ class AddClipButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       onPressed: () async {
         final data = await Clipboard.getData(Clipboard.kTextPlain);
         final articleUrl = data?.text;

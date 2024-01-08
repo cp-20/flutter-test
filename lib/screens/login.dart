@@ -8,7 +8,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:test_flutter_project/supabase/auth.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  final emailFieldController = TextEditingController();
+  final passwordFieldController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +75,54 @@ class LoginPage extends StatelessWidget {
                     signIn();
                   },
                 ),
+                TextButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: SizedBox(
+                                height: 140,
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      decoration: const InputDecoration(
+                                          labelText: 'メールアドレス'),
+                                      controller: emailFieldController,
+                                    ),
+                                    TextField(
+                                      decoration: const InputDecoration(
+                                          labelText: 'パスワード'),
+                                      obscureText: true,
+                                      controller: passwordFieldController,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('キャンセル')),
+                                TextButton(
+                                    onPressed: () {
+                                      final email = emailFieldController.text;
+                                      final password =
+                                          passwordFieldController.text;
+
+                                      supabase.auth.signInWithPassword(
+                                          email: email, password: password);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('実行')),
+                              ],
+                            );
+                          });
+                    },
+                    child: Text('APIキーでログイン',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.background)))
               ]),
         ),
       ),

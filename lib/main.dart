@@ -24,7 +24,7 @@ Future main() async {
       '/': (_) => const SharingIntent(
             child: SplashPage(),
           ),
-      '/login': (_) => const SharingIntent(child: LoginPage()),
+      '/login': (_) => SharingIntent(child: LoginPage()),
       '/home': (_) => const SharingIntent(child: MainApp()),
     },
   )));
