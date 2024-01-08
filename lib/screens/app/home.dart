@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: const ClipList(
                   unreadOnly: true,
-                )))
+                ))),
       ],
     ));
   }

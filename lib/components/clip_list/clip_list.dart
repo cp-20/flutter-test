@@ -30,7 +30,7 @@ class _ClipListState extends State<ClipList> {
   List<models.Clip> clipContents = [];
   final int loadLimit = 20;
 
-  Future<bool> fetchContents([int? cursor]) async {
+  Future<bool> fetchContents(bool replace, [int? cursor]) async {
     final clips =
         await getMyClips(context, loadLimit, cursor, widget.unreadOnly);
     if (clips == null) {
@@ -41,6 +41,9 @@ class _ClipListState extends State<ClipList> {
     }
 
     setState(() {
+      if (replace) {
+        clipContents = [];
+      }
       clipContents = clipContents.followedBy(clips.clips).toSet().toList();
     });
     return true;
@@ -62,8 +65,7 @@ class _ClipListState extends State<ClipList> {
   Widget build(BuildContext context) {
     useEffect(() {
       setState(() {
-        clipContents = [];
-        future = fetchContents();
+        future = fetchContents(true);
       });
       return null;
     }, [widget.unreadOnly]);
@@ -77,36 +79,40 @@ class _ClipListState extends State<ClipList> {
           print(snapshot.error);
           return const Text("エラーが発生しました");
         } else {
-          return InfinityListView<models.Clip>(
-            contents: clipContents,
-            fetchContents: () => fetchContents(clipContents.last.id),
-            itemListBuilder: (context, scrollController, clips, hasMore) {
-              return CustomScrollView(
-                controller: scrollController,
-                slivers: [
-                  SliverAnimatedListView(
-                    items: clips,
-                    itemBuilder:
-                        (context, clip, animation, isRemoved, insert, remove) {
-                      if (widget.type == ClipListType.card) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              await fetchContents(true);
+            },
+            child: InfinityListView<models.Clip>(
+              contents: clipContents,
+              fetchContents: () => fetchContents(false, clipContents.last.id),
+              itemListBuilder: (context, scrollController, clips, hasMore) {
+                return CustomScrollView(
+                  controller: scrollController,
+                  slivers: [
+                    SliverAnimatedListView(
+                      items: clips,
+                      itemBuilder: (context, clip, animation, isRemoved, insert,
+                          remove) {
+                        if (widget.type == ClipListType.card) {
+                          return Column(
+                            children: [
+                              Container(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                  child: ClipCard(clip: clip)),
+                              const SizedBox(height: 8),
+                            ],
+                          );
+                        }
+
                         return Column(
                           children: [
-                            Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                child: ClipCard(clip: clip)),
-                            const SizedBox(height: 8),
-                          ],
-                        );
-                      }
-
-                      return Column(
-                        children: [
-                          SizeTransition(
-                            sizeFactor: animation,
-                            child: DismissibleView(
-                              itemKey: Key('clip-${clip.id}'),
-                              onDismissed: (direction) {
+                            SizeTransition(
+                              sizeFactor: animation,
+                              child: DismissibleView(
+                                itemKey: Key('clip-${clip.id}'),
+                                onDismissed: (direction) {
                                   final targetIndex = clipContents.indexWhere(
                                       (element) => element.id == clip.id);
 
@@ -158,35 +164,36 @@ class _ClipListState extends State<ClipList> {
                                           targetIndex, targetClip);
                                     });
                                   });
-                              },
-                              child: ClipListTile(
-                                clip: clip,
+                                },
+                                child: ClipListTile(
+                                  clip: clip,
+                                ),
                               ),
                             ),
+                            Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.1)),
+                          ],
+                        );
+                      },
+                    ),
+                    if (hasMore)
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: CircularProgressIndicator(),
                           ),
-                          Divider(
-                              height: 1,
-                              thickness: 1,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.1)),
-                        ],
-                      );
-                    },
-                  ),
-                  if (hasMore)
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: Center(
-                          child: CircularProgressIndicator(),
                         ),
-                      ),
-                    )
-                ],
-              );
-            },
+                      )
+                  ],
+                );
+              },
+            ),
           );
         }
       },

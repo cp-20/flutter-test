@@ -42,7 +42,7 @@ class _SharingIntentState extends State<SharingIntent> {
                   print(snapshot.error);
                   return const Text("記事の登録中にエラーが発生しました");
                 } else {
-                  final clip = snapshot.data?.clip;
+                  final clip = snapshot.data;
                   final article = snapshot.data?.article;
                   if (clip == null || article == null) {
                     return const Text("記事の登録中にエラーが発生しました");

@@ -4,6 +4,7 @@ import 'package:test_flutter_project/supabase/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:test_flutter_project/components/add_clip_button.dart';
 import 'home.dart';
 import 'settings.dart';
 
@@ -31,6 +32,7 @@ class _MainAppState extends State<MainApp> {
 
     return Scaffold(
         body: [const HomePage(), const SettingsPage()][currentPageIndex],
+        floatingActionButton: const AddClipButton(),
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
             setState(() {

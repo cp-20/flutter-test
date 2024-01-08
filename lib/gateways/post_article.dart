@@ -5,22 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:test_flutter_project/gateways/const.dart';
 import 'package:test_flutter_project/gateways/utils.dart';
 import 'package:test_flutter_project/models/clip.dart';
-import 'package:test_flutter_project/models/article.dart';
 
-class ArticleAndClip {
-  const ArticleAndClip({required this.article, required this.clip});
-
-  final Article article;
-  final Clip clip;
-
-  factory ArticleAndClip.fromJson(Map<String, dynamic> json) {
-    final article = Article.fromJson(json['article']);
-    final clip = Clip.fromJson(json['clip']);
-    return ArticleAndClip(article: article, clip: clip);
-  }
-}
-
-Future<ArticleAndClip?> postArticle(
+Future<Clip?> postArticle(
     BuildContext context, String articleUrl) async {
   final cookie = getCookie(context);
   if (cookie == null) {
@@ -31,8 +17,9 @@ Future<ArticleAndClip?> postArticle(
 
   final response = await http.post(
     url,
-    body: {'type': 'url', 'articleUrl': articleUrl},
+    body: json.encode({'type': 'url', 'articleUrl': articleUrl}),
     headers: {
+      'Content-Type': 'application/json',
       'Cookie': cookie,
     },
   );
@@ -41,5 +28,5 @@ Future<ArticleAndClip?> postArticle(
     return null;
   }
 
-  return ArticleAndClip.fromJson(json.decode(response.body));
+  return Clip.fromJson(json.decode(response.body)['clip']);
 }
