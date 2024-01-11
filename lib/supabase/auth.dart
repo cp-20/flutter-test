@@ -63,9 +63,20 @@ class _AuthProviderState extends State<AuthProvider> {
   }
 }
 
-Future<void> signIn() async {
+Future<void> signInWithGitHub() async {
   try {
     await supabase.auth.signInWithOAuth(OAuthProvider.github,
+        redirectTo: 'read-stack://login-callback');
+  } on AuthException {
+    // ...
+  } on Exception {
+    // ..
+  }
+}
+
+Future<void> signInWithGoogle() async {
+  try {
+    await supabase.auth.signInWithOAuth(OAuthProvider.google,
         redirectTo: 'read-stack://login-callback');
   } on AuthException {
     // ...

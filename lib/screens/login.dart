@@ -54,7 +54,6 @@ class LoginPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     // minimumSize: const Size.fromHeight(48),
@@ -72,7 +71,27 @@ class LoginPage extends StatelessWidget {
                     ],
                   ),
                   onPressed: () {
-                    signIn();
+                    signInWithGitHub();
+                  },
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    // minimumSize: const Size.fromHeight(48),
+                    fixedSize: const Size(double.infinity, 48),
+                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  child: Wrap(
+                    spacing: 8,
+                    direction: Axis.horizontal,
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Icon(MdiIcons.google),
+                      const Text('Googleでログイン')
+                    ],
+                  ),
+                  onPressed: () {
+                    signInWithGoogle();
                   },
                 ),
                 TextButton(
