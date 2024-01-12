@@ -28,6 +28,7 @@ class _MainAppState extends State<MainApp> {
         Future.microtask(
             () => Navigator.of(context).pushReplacementNamed('/login'));
       }
+      return null;
     }, [user]);
 
     return Scaffold(

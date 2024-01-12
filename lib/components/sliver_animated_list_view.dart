@@ -67,6 +67,8 @@ class _SliverAnimatedListViewState<T> extends State<SliverAnimatedListView<T>> {
         final item = _list[i];
         if (!widget.items.contains(item)) _remove(i);
       }
+
+      return null;
     }, [widget.items]);
 
     return SliverAnimatedList(

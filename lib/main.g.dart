@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'color_schemes.g.dart';
 
@@ -7,7 +6,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -31,11 +30,11 @@ class Home extends StatelessWidget {
           elevation: 2,
           title: Text("Material Theme Builder"),
         ),
-        body: Center(
+        body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 'Update with your UI',
               ),
             ],
@@ -44,4 +43,4 @@ class Home extends StatelessWidget {
         floatingActionButton:
             FloatingActionButton(onPressed: () => {}, tooltip: 'Increment'));
   }
-}    
+}
