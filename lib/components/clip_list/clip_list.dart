@@ -29,14 +29,25 @@ class _ClipListState extends State<ClipList> {
   late Future<void> future;
   List<models.Clip> clipContents = [];
   final int loadLimit = 20;
+  bool hasMore = true;
 
   Future<bool> fetchContents(bool replace, [int? cursor]) async {
-    final clips =
+    final (clips, finished) =
         await getMyClips(context, loadLimit, cursor, widget.unreadOnly);
     if (clips == null) {
-      return true;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('記事の取得中にエラーが発生しました'),
+      ));
+      setState(() {
+        hasMore = false;
+      });
+      return false;
     }
-    if (clips.clips.isEmpty) {
+
+    if (finished) {
+      setState(() {
+        hasMore = false;
+      });
       return false;
     }
 
@@ -86,7 +97,13 @@ class _ClipListState extends State<ClipList> {
             child: InfinityListView<models.Clip>(
               contents: clipContents,
               fetchContents: () => fetchContents(false, clipContents.last.id),
-              itemListBuilder: (context, scrollController, clips, hasMore) {
+              itemListBuilder: (context, scrollController, clips) {
+                if (clips.isEmpty) {
+                  return const Center(
+                    child: Text('記事がありません\n右下のボタンから記事を追加できます', textAlign: TextAlign.center),
+                  );
+                }
+
                 return CustomScrollView(
                   controller: scrollController,
                   slivers: [

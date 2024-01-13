@@ -18,7 +18,7 @@ class Clips {
   }
 }
 
-Future<Clips?> getMyClips(BuildContext context, int loadLimit, int? cursor,
+getMyClips(BuildContext context, int loadLimit, int? cursor,
     [bool? unreadOnly]) async {
   final header = getAuthHeader(context);
 
@@ -42,8 +42,12 @@ Future<Clips?> getMyClips(BuildContext context, int loadLimit, int? cursor,
   );
 
   if (response.statusCode != 200) {
-    return null;
+    return (null, false);
   }
 
-  return Clips.fromJson(json.decode(response.body));
+  final body = json.decode(response.body);
+
+  final finished = body['finished'] as bool;
+
+  return (Clips.fromJson(body), finished);
 }
