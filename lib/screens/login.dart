@@ -67,7 +67,7 @@ class LoginPage extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Icon(MdiIcons.github),
-                      const Text('GtiHubでログイン')
+                      const Text('GitHubでログイン')
                     ],
                   ),
                   onPressed: () {
