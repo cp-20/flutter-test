@@ -69,7 +69,7 @@ class _SliverAnimatedListViewState<T> extends State<SliverAnimatedListView<T>> {
       }
 
       return null;
-    }, [widget.items]);
+    });
 
     return SliverAnimatedList(
       key: _listKey,

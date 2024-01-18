@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:test_flutter_project/screens/app/archive.dart';
 import 'package:test_flutter_project/supabase/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:test_flutter_project/components/add_clip_button.dart';
-import 'home.dart';
+import 'inbox.dart';
+import 'stack.dart';
 import 'settings.dart';
 
 class MainApp extends StatefulHookWidget {
@@ -32,7 +34,12 @@ class _MainAppState extends State<MainApp> {
     }, [user]);
 
     return Scaffold(
-        body: [const HomePage(), const SettingsPage()][currentPageIndex],
+        body: [
+          const InboxPage(),
+          const StackPage(),
+          const ArchivePage(),
+          const SettingsPage()
+        ][currentPageIndex],
         floatingActionButton: const AddClipButton(),
         bottomNavigationBar: NavigationBar(
           onDestinationSelected: (int index) {
@@ -43,9 +50,19 @@ class _MainAppState extends State<MainApp> {
           selectedIndex: currentPageIndex,
           destinations: const <Widget>[
             NavigationDestination(
+              selectedIcon: Icon(Icons.inbox),
+              icon: Icon(Icons.inbox_outlined),
+              label: '受信箱',
+            ),
+            NavigationDestination(
               selectedIcon: Icon(Icons.bookmarks_rounded),
               icon: Icon(Icons.bookmarks_outlined),
               label: 'スタック',
+            ),
+            NavigationDestination(
+              selectedIcon: Icon(Icons.archive),
+              icon: Icon(Icons.archive_outlined),
+              label: 'アーカイブ',
             ),
             NavigationDestination(
               selectedIcon: Icon(Icons.settings),

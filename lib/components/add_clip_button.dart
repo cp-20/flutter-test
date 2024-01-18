@@ -9,14 +9,14 @@ class AddClipButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+      label: const Text('記事の追加'),
+      icon: const Icon(Icons.add),
       onPressed: () async {
         final data = await Clipboard.getData(Clipboard.kTextPlain);
         final articleUrl = data?.text;
         if (articleUrl == null) {
           return;
         }
-
-        print(articleUrl);
 
         if (!context.mounted) return;
         final future = postArticle(context, articleUrl);
@@ -72,8 +72,6 @@ class AddClipButton extends StatelessWidget {
               );
             });
       },
-      label: const Text('記事の追加'),
-      icon: const Icon(Icons.add),
     );
   }
 }

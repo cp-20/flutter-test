@@ -13,7 +13,7 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
 
-  initAuth();
+  await initAuth();
 
   runApp(AuthProvider(
       child: MaterialApp(

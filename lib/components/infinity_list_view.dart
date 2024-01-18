@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 class InfinityListView<T> extends StatefulWidget {
-  final List<T> contents;
-  final Future<bool> Function() fetchContents;
-  final Widget Function(BuildContext, ScrollController, List<T>)
-      itemListBuilder;
-
   const InfinityListView({
     super.key,
     required this.contents,
+    required this.hasMore,
     required this.fetchContents,
     required this.itemListBuilder,
   });
+
+  final List<T> contents;
+  final bool hasMore;
+  final Future<void> Function() fetchContents;
+  final Widget Function(BuildContext, ScrollController, List<T>)
+      itemListBuilder;
 
   @override
   State<InfinityListView<T>> createState() => _InfinityListViewState<T>();
@@ -27,6 +29,7 @@ class _InfinityListViewState<T> extends State<InfinityListView<T>> {
 
     _scrollController = ScrollController();
     _scrollController.addListener(() async {
+      if (!widget.hasMore) return;
       if (_isLoading) return;
 
       final position = _scrollController.position.pixels;
@@ -51,7 +54,6 @@ class _InfinityListViewState<T> extends State<InfinityListView<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.itemListBuilder(
-        context, _scrollController, widget.contents);
+    return widget.itemListBuilder(context, _scrollController, widget.contents);
   }
 }

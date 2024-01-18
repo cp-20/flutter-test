@@ -4,11 +4,10 @@ import 'package:http/http.dart' as http;
 
 import 'package:test_flutter_project/gateways/const.dart';
 import 'package:test_flutter_project/gateways/utils.dart';
-import 'package:test_flutter_project/models/clip.dart';
+import 'package:test_flutter_project/models/inbox_item.dart';
 
-Future<(List<ClipWithArticle>?, bool)> getMyClips(
-    BuildContext context, int loadLimit, DateTime? before,
-    [String? readStatus]) async {
+Future<(List<InboxItemWithArticle>?, bool)> getMyInboxItems(
+    BuildContext context, int loadLimit, DateTime? before) async {
   final header = getAuthHeader(context);
 
   if (header == null) {
@@ -16,12 +15,9 @@ Future<(List<ClipWithArticle>?, bool)> getMyClips(
   }
 
   final url = (() {
-    var baseUrl = "$apiEndpoint/users/me/clips?limit=$loadLimit";
+    var baseUrl = "$apiEndpoint/users/me/inboxes?limit=$loadLimit";
     if (before != null) {
       baseUrl += "&before=${Uri.encodeComponent(before.toIso8601String())}";
-    }
-    if (readStatus != null) {
-      baseUrl += "&readStatus=$readStatus";
     }
     return baseUrl;
   })();
@@ -40,8 +36,8 @@ Future<(List<ClipWithArticle>?, bool)> getMyClips(
 
   final finished = body['finished'] as bool;
 
-  final rawClips = body['clips'] as List<dynamic>;
-  final clips = rawClips.map((e) => ClipWithArticle.fromJson(e)).toList();
+  final rawItems = body['items'] as List<dynamic>;
+  final items = rawItems.map((e) => InboxItemWithArticle.fromJson(e)).toList();
 
-  return (clips, finished);
+  return (items, finished);
 }

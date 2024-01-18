@@ -125,14 +125,16 @@ class LoginPage extends StatelessWidget {
                                     },
                                     child: const Text('キャンセル')),
                                 TextButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       final email = emailFieldController.text;
                                       final password =
                                           passwordFieldController.text;
 
-                                      supabase.auth.signInWithPassword(
+                                      await supabase.auth.signInWithPassword(
                                           email: email, password: password);
-                                      Navigator.pop(context);
+                                      if (context.mounted) {
+                                        Navigator.pop(context);
+                                      }
                                     },
                                     child: const Text('実行')),
                               ],

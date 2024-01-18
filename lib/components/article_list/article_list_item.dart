@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:nil/nil.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:test_flutter_project/models/clip.dart' as models;
+import 'package:test_flutter_project/models/article.dart';
 import 'package:test_flutter_project/screens/webview.dart';
 
-class ClipListTile extends StatelessWidget {
-  const ClipListTile({super.key, required this.clip});
+class ArticleListItem<T extends Article> extends StatelessWidget {
+  const ArticleListItem({super.key, required this.article});
 
-  final models.Clip clip;
+  final T article;
 
   @override
   Widget build(BuildContext context) {
-    final article = clip.article;
-    if (article == null) return nil;
-
     final imageUrl = article.ogImageUrl;
     final ogImage = imageUrl != null ? Image.network(imageUrl) : null;
 
@@ -85,22 +81,9 @@ class ClipListTile extends StatelessWidget {
                   IconButton(
                       padding: const EdgeInsets.all(8),
                       onPressed: () {
-                        print('star button pressed');
-                      },
-                      icon: const Icon(Icons.star_border)),
-                  IconButton(
-                      padding: const EdgeInsets.all(8),
-                      onPressed: () {
-                        if (clip.article == null) return;
-                        Share.share(clip.article!.url, subject: clip.article!.title);
+                        Share.share(article.url, subject: article.title);
                       },
                       icon: const Icon(Icons.share)),
-                  IconButton(
-                      padding: const EdgeInsets.all(8),
-                      onPressed: () {
-                        print('more button pressed');
-                      },
-                      icon: const Icon(Icons.more_horiz)),
                 ],
               ),
             ),

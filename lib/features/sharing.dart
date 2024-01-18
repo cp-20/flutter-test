@@ -16,11 +16,16 @@ class SharingIntent extends StatefulWidget {
 
 class _SharingIntentState extends State<SharingIntent> {
   late StreamSubscription _intentDataStreamSubscription;
+  String? lastLink;
 
   addLinksToStack(List<SharedFile> links) {
     if (links.isEmpty) return;
     final link = links[0].value;
     if (link == null) return;
+    if (!link.startsWith('http://') && !link.startsWith('https://')) return;
+
+    if (link == lastLink) return;
+    lastLink = link;
 
     final future = postArticle(context, link);
 
