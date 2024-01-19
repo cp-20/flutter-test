@@ -153,14 +153,14 @@ class _InboxListState extends State<InboxList>
                 }, animation);
               });
             },
-            dismissDirection: DismissDirection.horizontal,
+            dismissDirection: DismissDirection.startToEnd,
             dismissBackground: Container(
               color: Theme.of(context).colorScheme.primaryContainer,
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.only(left: 32),
                 child: Icon(
-                  Icons.mark_email_read,
+                  Icons.drive_file_move,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                   size: 32,
                 ),

@@ -172,7 +172,7 @@ class _StackListState extends State<StackList>
                 });
               }
             },
-            dismissDirection: DismissDirection.startToEnd,
+            dismissDirection: DismissDirection.horizontal,
             dismissBackground: Container(
               color: Theme.of(context).colorScheme.primaryContainer,
               alignment: Alignment.centerLeft,
@@ -191,8 +191,8 @@ class _StackListState extends State<StackList>
               child: Padding(
                 padding: const EdgeInsets.only(right: 32),
                 child: Icon(
-                  Icons.move_to_inbox,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  Icons.drive_file_move_rtl,
+                  color: Theme.of(context).colorScheme.onSecondary,
                   size: 32,
                 ),
               ),
