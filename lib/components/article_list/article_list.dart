@@ -54,7 +54,7 @@ class _ArticleListState<T extends Article> extends State<ArticleList<T>> {
                   widget.articles.indexWhere((a) => a.id == article.id);
 
               removeArticle() {
-                remove(targetIndex);
+                // remove(targetIndex);
                 setState(() {
                   widget.articles.removeAt(targetIndex);
                 });
