@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:test_flutter_project/gateways/get_me.dart';
 import 'package:test_flutter_project/supabase/auth.dart';
 
 class LoginPage extends StatelessWidget {
@@ -19,6 +19,7 @@ class LoginPage extends StatelessWidget {
         Provider.of<SupabaseAuthState>(context).state.currentUser;
 
     if (user != null) {
+      getMe(context);
       Future.microtask(
           () => Navigator.of(context).pushReplacementNamed('/home'));
     }
