@@ -18,7 +18,7 @@ class MainApp extends StatefulHookWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  int currentPageIndex = 0;
+  int currentPageIndex = 1;
 
   @override
   Widget build(BuildContext context) {
