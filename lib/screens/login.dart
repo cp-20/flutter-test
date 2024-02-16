@@ -55,6 +55,7 @@ class LoginPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     // minimumSize: const Size.fromHeight(48),
@@ -96,55 +97,56 @@ class LoginPage extends StatelessWidget {
                   },
                 ),
                 TextButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              content: SizedBox(
-                                height: 140,
-                                child: Column(
-                                  children: [
-                                    TextField(
-                                      decoration: const InputDecoration(
-                                          labelText: 'メールアドレス'),
-                                      controller: emailFieldController,
-                                    ),
-                                    TextField(
-                                      decoration: const InputDecoration(
-                                          labelText: 'パスワード'),
-                                      obscureText: true,
-                                      controller: passwordFieldController,
-                                    ),
-                                  ],
-                                ),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: SizedBox(
+                              height: 140,
+                              child: Column(
+                                children: [
+                                  TextField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'メールアドレス'),
+                                    controller: emailFieldController,
+                                  ),
+                                  TextField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'パスワード'),
+                                    obscureText: true,
+                                    controller: passwordFieldController,
+                                  ),
+                                ],
                               ),
-                              actions: [
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('キャンセル')),
-                                TextButton(
-                                    onPressed: () async {
-                                      final email = emailFieldController.text;
-                                      final password =
-                                          passwordFieldController.text;
+                            ),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('キャンセル')),
+                              TextButton(
+                                  onPressed: () async {
+                                    final email = emailFieldController.text;
+                                    final password =
+                                        passwordFieldController.text;
 
-                                      await supabase.auth.signInWithPassword(
-                                          email: email, password: password);
-                                      if (context.mounted) {
-                                        Navigator.pop(context);
-                                      }
-                                    },
-                                    child: const Text('実行')),
-                              ],
-                            );
-                          });
-                    },
-                    child: Text('APIキーでログイン',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.background)))
+                                    await supabase.auth.signUp(
+                                        email: email, password: password);
+                                    if (context.mounted) {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: const Text('ログイン')),
+                            ],
+                          );
+                        });
+                  },
+                  child: Text('メールアドレスでログイン (非推奨)',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary)),
+                ),
               ]),
         ),
       ),
