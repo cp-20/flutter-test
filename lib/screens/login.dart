@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:test_flutter_project/gateways/get_me.dart';
 import 'package:test_flutter_project/supabase/auth.dart';
+import 'dart:io';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -96,26 +97,27 @@ class LoginPage extends StatelessWidget {
                     signInWithGoogle();
                   },
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    // minimumSize: const Size.fromHeight(48),
-                    fixedSize: const Size(double.infinity, 48),
-                    textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                if (Platform.isIOS)
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      // minimumSize: const Size.fromHeight(48),
+                      fixedSize: const Size(double.infinity, 48),
+                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    child: Wrap(
+                      spacing: 8,
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Icon(MdiIcons.apple),
+                        const Text('Apple IDでログイン')
+                      ],
+                    ),
+                    onPressed: () {
+                      signInWithApple();
+                    },
                   ),
-                  child: Wrap(
-                    spacing: 8,
-                    direction: Axis.horizontal,
-                    alignment: WrapAlignment.center,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Icon(MdiIcons.apple),
-                      const Text('Apple IDでログイン')
-                    ],
-                  ),
-                  onPressed: () {
-                    signInWithApple();
-                  },
-                ),
                 TextButton(
                   onPressed: () {
                     showDialog(
