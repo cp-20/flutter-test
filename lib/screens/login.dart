@@ -97,12 +97,22 @@ class LoginPage extends StatelessWidget {
                     signInWithGoogle();
                   },
                 ),
-                if (Platform.isIOS)
+                if (Platform.isIOS || true)
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       // minimumSize: const Size.fromHeight(48),
                       fixedSize: const Size(double.infinity, 48),
+                      backgroundColor:
+                          MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                       textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                      foregroundColor:
+                          MediaQuery.platformBrightnessOf(context) ==
+                                  Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
                     ),
                     child: Wrap(
                       spacing: 8,
