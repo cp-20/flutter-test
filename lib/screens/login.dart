@@ -97,7 +97,7 @@ class LoginPage extends StatelessWidget {
                     signInWithGoogle();
                   },
                 ),
-                if (Platform.isIOS || true)
+                if (Platform.isIOS)
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       // minimumSize: const Size.fromHeight(48),
