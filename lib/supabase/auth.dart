@@ -89,6 +89,18 @@ Future<void> signInWithGoogle() async {
   }
 }
 
+Future<void> signInWithApple() async {
+  try {
+    await supabase.auth.signInWithOAuth(OAuthProvider.apple,
+        redirectTo: redirectTo,
+        authScreenLaunchMode: LaunchMode.inAppBrowserView);
+  } on AuthException {
+    // ...
+  } on Exception {
+    // ..
+  }
+}
+
 Future<void> signOut() async {
   try {
     await supabase.auth.signOut();
